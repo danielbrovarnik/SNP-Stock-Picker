@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Random S&P 500 Stock Picker</title>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7EY771DZ8F"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-7EY771DZ8F');
+  </script>
+  <!-- End Google Analytics -->
+
+  <style>
+    /* Ensure html and body fill the viewport */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    /* Use a flex container for the whole page */
+    body {
+      display: flex;
+      flex-direction: column;
+      background-color: #f4f4f4;
+      font-family: Arial, sans-serif;
+    }
+    /* Container holds header, chart, and button */
+    .container {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      /* Optional: add some padding so content doesn't touch the edges */
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    h1 {
+      text-align: center;
+      margin: 10px 0;
+      flex: 0 0 auto;
+    }
+    /* The chart container will stretch horizontally to fill the width,
+       and vertically it takes up the remaining space without pushing the button off-screen */
+    #chart-container {
+      flex: 1 1 auto;
+      width: 100%;
+      background: white;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      /* Optional: add a margin between the header and button */
+      margin: 10px 0;
+    }
+    /* Button container that stays at the bottom */
+    .button-container {
+      text-align: center;
+      flex: 0 0 auto;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+  <script type="text/javascript">
+    // Returns a random S&P 500 stock symbol from a hard-coded list.
+    function getRandomStock() {
+      const stocks = [
+        "AAPL", "NVDA", "MSFT", "AMZN", "META", "AVGO", "GOOGL", "TSLA", "GOOG", "BRK.B", "JPM",
+        "LLY", "V", "UNH", "COST", "XOM", "MA", "WMT", "NFLX", "HD", "PG", "JNJ", "ABBV", "CRM",
+        "BAC", "ORCL", "KO", "WFC", "CVX", "CSCO", "ACN", "PLTR", "IBM", "PM", "ABT", "GE", "MCD",
+        "LIN", "MRK", "ISRG", "NOW", "TMO", "GS", "ADBE", "DIS", "PEP", "QCOM", "T", "AMD", "VZ",
+        "SPGI", "AXP", "CAT", "MS", "UBER", "RTX", "BKNG", "TXN", "INTU", "AMGN", "BSX", "C",
+        "PGR", "UNP", "AMAT", "PFE", "LOW", "BLK", "TJX", "NEE", "SCHW", "BA", "CMCSA", "HON",
+        "SYK", "PANW", "GILD", "DHR", "FI", "TMUS", "SBUX", "ADP", "COP", "ETN", "VRTX", "DE",
+        "MDT", "BX", "BMY", "MMC", "ANET", "PLD", "LRCX", "MU", "CRWD", "INTC", "ADI", "KLAC",
+        "GEV", "CB", "CEG", "ICE", "SO", "KKR", "LMT", "ELV", "MO", "CME", "WELL", "PH", "EQIX",
+        "NKE", "DUK", "UPS", "AON", "SHW", "APH", "CVS", "CI", "WM", "MCO", "AJG", "MDLZ", "TT",
+        "CDNS", "SNPS", "MMM", "CMG", "MSI", "PNC", "ORLY", "PYPL", "MCK", "COF", "TDG", "ZTS",
+        "USB", "EOG", "CL", "EMR", "REGN", "APO", "CTAS", "APD", "WMB", "FTNT", "ITW", "ECL",
+        "MAR", "HLT", "ADSK", "BDX", "RCL", "CSX", "GD", "BK", "NOC", "ROP", "OKE", "ABNB",
+        "TFC", "SLB", "TGT", "JCI", "FDX", "HCA", "AZO", "NSC", "FCX", "SPG", "VST", "NXPI",
+        "WDAY", "TRV", "PCAR", "NEM", "AEP", "CARR", "SRE", "GM", "CPRT", "AMP", "AFL", "HWM",
+        "PSX", "DLR", "KMI", "ALL", "CMI", "MPC", "AXON", "O", "MET", "URI", "DFS", "AIG", "D",
+        "PAYX", "PSA", "ROST", "TEL", "RSG", "BKR", "GWW", "KMB", "EW", "MSCI", "TRGP", "CTSH",
+        "LULU", "FICO", "KR", "CTVA", "EXC", "CBRE", "PWR", "FAST", "COR", "GEHC", "AME", "PEG",
+        "VRSK", "YUM", "VLO", "KVUE", "DAL", "HES", "GLW", "PRU", "XEL", "A", "CCI", "OTIS",
+        "ODFL", "FIS", "LHX", "DHI", "IDXX", "IR", "F", "KDP", "ETR", "VMC", "SYY", "RMD",
+        "DD", "CHTR", "MNST", "PCG", "TTWO", "MPWR", "DELL", "NDAQ", "IQV", "ACGL", "WAB",
+        "ROK", "UAL", "EBAY", "ED", "EXR", "GIS", "DXCM", "MTB", "HIG", "WEC", "MLM", "WTW",
+        "OXY", "GRMN", "HPQ", "VICI", "XYL", "NUE", "EQT", "AVB", "EFX", "KEYS", "EA", "CAH",
+        "HUM", "TSCO", "CSGP", "GDDY", "ANSS", "LEN", "RJF", "FITB", "FANG", "MCHP", "IP",
+        "STT", "CNC", "BR", "FTV", "IRM", "DOV", "TYL", "HPE", "MTD", "PPG", "VTR", "CCL",
+        "DOW", "SW", "GPN", "DTE", "BRO", "AEE", "CHD", "KHC", "CPAY", "TPL", "STZ", "PPL",
+        "CDW", "EXPE", "SYF", "AWK", "VLTO", "EQR", "HBAN", "NTAP", "DECK", "LYV", "TROW",
+        "HSY", "WDC", "TDY", "HAL", "ATO", "ES", "WBD", "DRI", "WAT", "DVN", "NVR", "SBAC",
+        "K", "NTRS", "IFF", "PHM", "RF", "ADM", "CNP", "CBOE", "ON", "STE", "WY", "NRG",
+        "STX", "CINF", "SMCI", "HUBB", "CMS", "FE", "LH", "CTRA", "CFG", "TPR", "BIIB", "PTC",
+        "EIX", "ZBH", "LII", "LYB", "PODD", "MKC", "JBL", "VRSN", "PKG", "DGX", "STLD", "ESS",
+        "CLX", "COO", "WRB", "NI", "TER", "PFG", "MAA", "INVH", "FFIV", "LUV", "TRMB", "SNA",
+        "BLDR", "FDS", "LDOS", "BBY", "GPC", "KEY", "FSLR", "ULTA", "MAS", "ZBRA", "DPZ",
+        "TSN", "EL", "J", "PNR", "OMC", "DG", "EXPD", "LNT", "BAX", "APTV", "MOH", "EVRG",
+        "L", "EPAM", "GEN", "KIM", "AKAM", "ARE", "HOLX", "BALL", "AVY", "LVS", "AMCR",
+        "ROL", "DLTR", "IEX", "WST", "EG", "ALGN", "CF", "DOC", "RVTY", "KMX", "TXT", "SWK",
+        "JBHT", "UDR", "POOL", "VTRS", "CPT", "JKHY", "REG", "FOXA", "JNPR", "CAG", "NDSN",
+        "EMN", "NCLH", "CHRW", "ALLE", "HST", "INCY", "NWSA", "RL", "SJM", "MRNA", "UHS",
+        "AIZ", "SWKS", "TECH", "DAY", "BXP", "GL", "SOLV", "PAYC", "TAP", "PNW", "IPG", "LKQ",
+        "ERIE", "BG", "HSIC", "ALB", "MGM", "GNRC", "MTCH", "FRT", "ENPH", "MOS", "APA", "HRL",
+        "CZR", "IVZ", "LW", "DVA", "HAS", "AOS", "CRL", "TFX", "CPB", "WYNN", "MKTX", "AES",
+        "CE", "WBA", "FOX", "PARA", "BWA", "HII", "MHK", "BEN", "BF.B", "FMC", "NWS"
+      ];
+      return stocks[Math.floor(Math.random() * stocks.length)];
+    }
+
+    function loadChart() {
+      // Get a random stock symbol (without exchange prefix)
+      let symbol = getRandomStock();
+      
+      // Remove any existing TradingView widget if present
+      const oldWidget = document.getElementById("tradingview-widget");
+      if (oldWidget) {
+        oldWidget.remove();
+      }
+      
+      // Create a new widget container that fills the chart container
+      const container = document.getElementById("chart-container");
+      const newWidget = document.createElement("div");
+      newWidget.id = "tradingview-widget";
+      newWidget.style.width = "100%";
+      newWidget.style.height = "100%";
+      container.appendChild(newWidget);
+      
+      // Initialize the TradingView widget
+      new TradingView.widget({
+        "container_id": "tradingview-widget",
+        "autosize": true,
+        "symbol": symbol,
+        "interval": "D",
+        "timezone": "Etc/UTC",
+        "theme": "dark",
+        "style": "1",
+        "locale": "en",
+        "toolbar_bg": "#f1f3f6",
+        "enable_publishing": false,
+        "allow_symbol_change": true,
+        "withdateranges": true,
+        "hide_side_toolbar": false,
+        "details": true,
+        "hotlist": true,
+        "calendar": true,
+        "news": ["headlines"],
+        "show_popup_button": true,
+        "popup_width": 1000,
+        "popup_height": 650,
+        "hide_volume": true
+      });
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Random S&P 500 Stock Picker</h1>
+    <div id="chart-container"></div>
+    <div class="button-container">
+      <button onclick="loadChart()">Load Random Chart</button>
+    </div>
+  </div>
+  
+  <!-- TradingView Library -->
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+</body>
+</html>
